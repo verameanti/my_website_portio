@@ -1,0 +1,199 @@
+---
+title: "returns on financial stock analysis"
+author: "Vera Meanti"
+date: "`r Sys.Date()`"
+featureImage: images/allpost/stock.jpg
+postImage: images/single-blog/stock.jpg
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+---
+
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(fivethirtyeight)
+library(here)
+library(skimr)
+library(janitor)
+library(vroom)
+library(tidyquant)
+library(rvest) # to scrape wikipedia page
+```
+
+# Returns of financial stocks
+
+> You may find useful the material on [finance data sources](https://mam2022.netlify.app/reference/finance_data/). 
+
+We will use the `tidyquant` package to download historical data of stock prices, calculate returns, and examine the distribution of returns. 
+
+We must first identify which stocks we want to download data for, and for this we must know their ticker symbol; Apple is known as AAPL, Microsoft as MSFT, McDonald's as MCD, etc. The file `nyse.csv` contains 508 stocks listed on the NYSE, their ticker `symbol`, `name`, the IPO  (Initial Public Offering) year, and the sector and industry the company is in.
+
+```{r load_nyse_data, message=FALSE, warning=FALSE}
+
+# Importing and viewing the dataset
+nyse <- read_csv(here::here("data-csv","nyse.csv"))
+glimpse(nyse)
+skim(nyse)
+
+```
+
+Based on this dataset, create a table and a bar plot that shows the number of companies per sector, in descending order
+
+```{r companies_per_sector}
+
+# Arranging the dataset
+per_sector <- nyse %>% 
+  group_by(sector) %>% 
+  count() %>% 
+  arrange(desc(n))
+
+# Plotting the column chart
+ggplot(per_sector,aes(x=n,y=reorder(sector,n))) +
+  geom_col() +
+  labs(title = 'Number of Companies by Sector', y = 'sector')
+  NULL
+
+```
+
+Next, let's choose some stocks and their ticker symbols and download some data. You **MUST** choose 6 different stocks from the ones listed below; You should, however, add `SPY` which is the SP500 ETF (Exchange Traded Fund).
+
+
+```{r get_price_data, message=FALSE, warning=FALSE, cache=TRUE}
+
+# Scraping the stock data
+
+myStocks <- c("AAPL","JPM","DPZ","ANF","TSLA","XOM","SPY" ) %>%
+  tq_get(get  = "stock.prices",
+         from = "2011-01-01",
+         to   = "2021-08-31") %>%
+  group_by(symbol) 
+
+glimpse(myStocks) # examine the structure of the resulting data frame
+```
+
+Financial performance analysis depend on returns; If I buy a stock today for 100 and I sell it tomorrow for 101.75, my one-day return, assuming no transaction costs, is 1.75%. So given the adjusted closing prices, our first step is to calculate daily and monthly returns.
+
+
+```{r calculate_returns, message=FALSE, warning=FALSE, cache=TRUE}
+# Calculating daily returns
+
+myStocks_returns_daily <- myStocks %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "daily", 
+               type       = "log",
+               col_rename = "daily_returns",
+               cols = c(nested.col))  
+
+# Calculating monthly  returns
+
+myStocks_returns_monthly <- myStocks %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "monthly", 
+               type       = "arithmetic",
+               col_rename = "monthly_returns",
+               cols = c(nested.col)) 
+
+# Calculating yearly returns
+
+myStocks_returns_annual <- myStocks %>%
+  group_by(symbol) %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "yearly", 
+               type       = "arithmetic",
+               col_rename = "yearly_returns",
+               cols = c(nested.col))
+
+```
+
+Create a table where you summarise monthly returns for each of the stocks and `SPY`; min, max, median, mean, SD.
+
+```{r summarise_monthly_returns}
+
+# Creating summary statistics
+
+myStocks_returns_monthly_summary <- myStocks_returns_monthly %>% 
+  group_by(symbol) %>% 
+  summarise(min_return = min(monthly_returns),
+            max_return = max(monthly_returns),
+            median_return = median(monthly_returns),
+            mean_return = mean(monthly_returns),
+            SD_return = sd(monthly_returns)) %>% 
+  arrange(mean_return)
+
+myStocks_returns_monthly_summary
+
+```
+
+
+Plot a density plot, using `geom_density()`, for each of the stocks
+```{r density_monthly_returns}
+
+# Plotting returns for each stock
+
+myStocks_returns_monthly %>% 
+  ggplot(aes(x=monthly_returns)) +
+  geom_density() +
+  facet_wrap(~symbol) +
+  labs(title = 'Monthly Return Distribution of Stocks') +
+  NULL
+```
+
+What can you infer from this plot? Which stock is the riskiest? The least risky?
+
+> TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.
+
+We can see that all plots peak at a monthly return around zero percent. The more risky the stock is, its peak around zero should be lower and it should have more extreme return values. Thus, the most risky stock is TSLA, and the least risky one is SPY, likely because it is a combination of multiple stocks within a portfolio. In this way, fluctuations for individual stocks will not affect SPY's monthly return too much.
+
+Finally, make a plot that shows the expected monthly return (mean) of a stock on the Y axis and the risk (standard deviation) in the X-axis. Please use `ggrepel::geom_text_repel()` to label each stock
+
+```{r risk_return_plot}
+# Plotting summary statistics for each stock
+
+ggplot(myStocks_returns_monthly_summary,aes(x=SD_return, y=mean_return, label=symbol)) +
+  geom_point() +
+  ggrepel::geom_text_repel() +
+  labs(title = 'Risk vs. Mean Monthly Return by Stock') +
+  NULL
+```
+
+What can you infer from this plot? Are there any stocks which, while being riskier, do not have a higher expected return?
+
+In general, stocks with higher returns are accompanied with higher risks. ANF underperforms as it has a much higher risk (SD_return) than all the other stocks, yet has a lower average return than all the other stocks except XOM. By contrast, DPZ is a very attractive stock because it generates second highest return while carrying less volatility (risk). Although TSLA has the highest return, it also carries the highest risk and may only be suitable for those with strong risk-bearing capability.
+
+
+
+
+
+
+
+
+

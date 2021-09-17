@@ -1,0 +1,343 @@
+---
+title: "IMDB Dataset - Movies analysis"
+author: "Vera Meanti"
+date: "`r Sys.Date()`"
+featureImage: images/allpost/cinema.jpg
+postImage: images/single-blog/cinema.jpg
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+---
+
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(fivethirtyeight)
+library(here)
+library(skimr)
+library(janitor)
+library(vroom)
+library(tidyquant)
+library(rvest) # to scrape wikipedia page
+```
+
+
+# Analysis of movies- IMDB dataset
+
+We will look at a subset sample of movies, taken from the [Kaggle IMDB 5000 movie dataset](https://www.kaggle.com/carolzhangdc/imdb-5000-movie-dataset)
+
+
+```{r,load_movies, warning=FALSE, message=FALSE}
+movies <- read_csv(here::here("data-csv", "movies.csv"))
+glimpse(movies)
+
+```
+
+Besides the obvious variables of `title`, `genre`, `director`, `year`, and `duration`, the rest of the variables are as follows:
+
+- `gross` : The gross earnings in the US box office, not adjusted for inflation
+- `budget`: The movie's budget 
+- `cast_facebook_likes`: the number of facebook likes cast memebrs received
+- `votes`: the number of people who voted for (or rated) the movie in IMDB 
+- `reviews`: the number of reviews for that movie
+- `rating`: IMDB average rating 
+
+## Use your data import, inspection, and cleaning skills to answer the following:
+
+- Are there any missing values (NAs)? Are all entries distinct or are there duplicate entries?
+```{r}
+skim(movies)
+
+```
+There are no missing values in the dataset.
+
+- Produce a table with the count of movies by genre, ranked in descending order
+```{r}
+movies %>% 
+  group_by(genre) %>% 
+  summarise(movie_count = n())
+
+```
+
+- Produce a table with the average gross earning and budget (`gross` and `budget`) by genre. Calculate a variable `return_on_budget` which shows how many $ did a movie make at the box office for each $ of its budget. Ranked genres by this `return_on_budget` in descending order
+
+```{r}
+movies %>% 
+  group_by(genre) %>% 
+  summarise(mean_gross = mean(gross),
+            mean_budget = mean(budget)) %>% 
+  mutate(return_on_budget = mean_gross / mean_budget) %>% 
+  arrange(desc(return_on_budget))
+```
+
+- Produce a table that shows the top 15 directors who have created the highest gross revenue in the box office. Don't just show the total gross amount, but also the mean, median, and standard deviation per director.
+
+```{r}
+movies %>% 
+  group_by(director) %>% 
+  summarise(total_gross = sum(gross),
+            mean_gross = mean(gross),
+            median_gross = median(gross),
+            sd_gross = sd(gross)) %>% 
+  slice_max(total_gross, n=15) %>% 
+  arrange(desc(total_gross))
+```
+
+
+- Finally, ratings. Produce a table that describes how ratings are distributed by genre. We don't want just the mean, but also, min, max, median, SD and some kind of a histogram or density graph that visually shows how ratings are distributed. 
+
+```{r}
+
+# Creating the variables
+movies %>% 
+  group_by(genre) %>% 
+  summarise(mean_rating = mean(rating),
+            min_rating = min(rating),
+            max_rating = max(rating),
+            median_rating = median(rating),
+            sd_rating = sd(rating)) %>% 
+  arrange(desc(mean_rating))
+
+# Making the overall histogram
+ggplot(movies,aes(x=rating)) +
+  geom_histogram() +
+  labs(title = 'Overall Ratings Distribution')
+
+# Making histograms for each genre (free scale)
+ggplot(movies,aes(x=rating)) +
+  geom_histogram() +
+  facet_wrap(~genre,scales = 'free') +
+  labs(title = 'Ratings Distribution by Genre (free scale)')
+
+# Making histograms for each genre (uniform scale)
+ggplot(movies,aes(x=rating)) +
+  geom_histogram() +
+  facet_wrap(~genre) +
+  labs(title = 'Ratings Distribution by Genre (uniform scale)') +
+  NULL
+
+
+```
+
+
+## Use `ggplot` to answer the following
+
+  - Examine the relationship between `gross` and `cast_facebook_likes`. Produce a scatterplot and write one sentence discussing whether the number of facebook likes that the cast has received is likely to be a good predictor of how much money a movie will make at the box office. What variable are you going to map to the Y- and X- axes?
+  
+  
+```{r, gross_on_fblikes}
+
+# Plotting the scatter plot
+ggplot(movies,aes(x = cast_facebook_likes, y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  labs(title = 'Cast_facebook_likes vs. Gross') +
+  NULL
+  
+```
+Cast_facebook_likes is used as the independent variable and placed on x-axis, whereas gross is to be predicted and placed on y-axis as dependent variables. We can see that the line of best fit suggests that there is a positive correlation between the two variables when the facebook likes are low. However, this relationship is very **insignificant** and it is inverted after facebook likes exceeds around 300,000, potentially due to presence of outliers with high facebook likes but low gross. Overall facebook likes is not a great predictor for gross.
+
+  - Examine the relationship between `gross` and `budget`. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.
+
+```{r, gross_on_budget}
+
+# Plotting the scatter plot
+ggplot(movies,aes(x = budget, y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  labs(title = 'Budget vs. Gross') +
+  NULL
+
+```
+We observe a **relatively strong** positive correlation between the budget and gross of movies. Budget is not the perfect predictor but can predict the gross to a degree.
+
+  - Examine the relationship between `gross` and `rating`. Produce a scatterplot, faceted by `genre` and discuss whether IMDB ratings are likely to be a good predictor of how much money a movie will make at the box office. Is there anything strange in this dataset?
+
+```{r, gross_on_rating}
+
+# Plotting multiple scatter plots by genre
+ggplot(movies,aes(x = rating, y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~genre) +
+  labs(title = 'Ratings vs. Gross by Genre') +
+  NULL
+```
+We observe a decent level of positive correlation between rating and gross for most genres with sufficient data points. Thus, rating is a decent predictor to predict the gross of movies overall. However, there are quite a number of genres with insufficient data points and there is one strange thing: the documentary genre shows a negative relationship between rating and gross.
+
+# Returns of financial stocks
+
+> You may find useful the material on [finance data sources](https://mam2022.netlify.app/reference/finance_data/). 
+
+We will use the `tidyquant` package to download historical data of stock prices, calculate returns, and examine the distribution of returns. 
+
+We must first identify which stocks we want to download data for, and for this we must know their ticker symbol; Apple is known as AAPL, Microsoft as MSFT, McDonald's as MCD, etc. The file `nyse.csv` contains 508 stocks listed on the NYSE, their ticker `symbol`, `name`, the IPO  (Initial Public Offering) year, and the sector and industry the company is in.
+
+```{r load_nyse_data, message=FALSE, warning=FALSE}
+
+# Importing and viewing the dataset
+nyse <- read_csv(here::here("data-csv","nyse.csv"))
+glimpse(nyse)
+skim(nyse)
+
+```
+
+Based on this dataset, create a table and a bar plot that shows the number of companies per sector, in descending order
+
+```{r companies_per_sector}
+
+# Arranging the dataset
+per_sector <- nyse %>% 
+  group_by(sector) %>% 
+  count() %>% 
+  arrange(desc(n))
+
+# Plotting the column chart
+ggplot(per_sector,aes(x=n,y=reorder(sector,n))) +
+  geom_col() +
+  labs(title = 'Number of Companies by Sector', y = 'sector')
+  NULL
+
+```
+
+Next, let's choose some stocks and their ticker symbols and download some data. You **MUST** choose 6 different stocks from the ones listed below; You should, however, add `SPY` which is the SP500 ETF (Exchange Traded Fund).
+
+
+```{r get_price_data, message=FALSE, warning=FALSE, cache=TRUE}
+
+# Scraping the stock data
+
+myStocks <- c("AAPL","JPM","DPZ","ANF","TSLA","XOM","SPY" ) %>%
+  tq_get(get  = "stock.prices",
+         from = "2011-01-01",
+         to   = "2021-08-31") %>%
+  group_by(symbol) 
+
+glimpse(myStocks) # examine the structure of the resulting data frame
+```
+
+Financial performance analysis depend on returns; If I buy a stock today for 100 and I sell it tomorrow for 101.75, my one-day return, assuming no transaction costs, is 1.75%. So given the adjusted closing prices, our first step is to calculate daily and monthly returns.
+
+
+```{r calculate_returns, message=FALSE, warning=FALSE, cache=TRUE}
+# Calculating daily returns
+
+myStocks_returns_daily <- myStocks %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "daily", 
+               type       = "log",
+               col_rename = "daily_returns",
+               cols = c(nested.col))  
+
+# Calculating monthly  returns
+
+myStocks_returns_monthly <- myStocks %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "monthly", 
+               type       = "arithmetic",
+               col_rename = "monthly_returns",
+               cols = c(nested.col)) 
+
+# Calculating yearly returns
+
+myStocks_returns_annual <- myStocks %>%
+  group_by(symbol) %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "yearly", 
+               type       = "arithmetic",
+               col_rename = "yearly_returns",
+               cols = c(nested.col))
+
+```
+
+Create a table where you summarise monthly returns for each of the stocks and `SPY`; min, max, median, mean, SD.
+
+```{r summarise_monthly_returns}
+
+# Creating summary statistics
+
+myStocks_returns_monthly_summary <- myStocks_returns_monthly %>% 
+  group_by(symbol) %>% 
+  summarise(min_return = min(monthly_returns),
+            max_return = max(monthly_returns),
+            median_return = median(monthly_returns),
+            mean_return = mean(monthly_returns),
+            SD_return = sd(monthly_returns)) %>% 
+  arrange(mean_return)
+
+myStocks_returns_monthly_summary
+
+```
+
+
+Plot a density plot, using `geom_density()`, for each of the stocks
+```{r density_monthly_returns}
+
+# Plotting returns for each stock
+
+myStocks_returns_monthly %>% 
+  ggplot(aes(x=monthly_returns)) +
+  geom_density() +
+  facet_wrap(~symbol) +
+  labs(title = 'Monthly Return Distribution of Stocks') +
+  NULL
+```
+
+What can you infer from this plot? Which stock is the riskiest? The least risky?
+
+> TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.
+
+We can see that all plots peak at a monthly return around zero percent. The more risky the stock is, its peak around zero should be lower and it should have more extreme return values. Thus, the most risky stock is TSLA, and the least risky one is SPY, likely because it is a combination of multiple stocks within a portfolio. In this way, fluctuations for individual stocks will not affect SPY's monthly return too much.
+
+Finally, make a plot that shows the expected monthly return (mean) of a stock on the Y axis and the risk (standard deviation) in the X-axis. Please use `ggrepel::geom_text_repel()` to label each stock
+
+```{r risk_return_plot}
+# Plotting summary statistics for each stock
+
+ggplot(myStocks_returns_monthly_summary,aes(x=SD_return, y=mean_return, label=symbol)) +
+  geom_point() +
+  ggrepel::geom_text_repel() +
+  labs(title = 'Risk vs. Mean Monthly Return by Stock') +
+  NULL
+```
+
+What can you infer from this plot? Are there any stocks which, while being riskier, do not have a higher expected return?
+
+In general, stocks with higher returns are accompanied with higher risks. ANF underperforms as it has a much higher risk (SD_return) than all the other stocks, yet has a lower average return than all the other stocks except XOM. By contrast, DPZ is a very attractive stock because it generates second highest return while carrying less volatility (risk). Although TSLA has the highest return, it also carries the highest risk and may only be suitable for those with strong risk-bearing capability.
+
+
+
+
+
+
+
+
+
