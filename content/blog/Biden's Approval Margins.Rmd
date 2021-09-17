@@ -1,0 +1,99 @@
+---
+title: "Biden's Approval Margins"
+output: html_document
+---
+# Biden's Approval Margins
+
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  #fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+```
+
+As we saw in class, fivethirtyeight.com has detailed data on [all polls that track the president's approval ](https://projects.fivethirtyeight.com/biden-approval-ratings)
+
+```{r, cache=TRUE}
+# Import approval polls data directly off fivethirtyeight website
+approval_polllist <- read_csv('https://projects.fivethirtyeight.com/biden-approval-data/approval_polllist.csv') 
+
+# Use `lubridate` to fix dates, as they are given as characters.
+approval_polllist <- approval_polllist %>% 
+  mutate(modeldate = mdy(modeldate),
+         startdate = mdy(startdate),
+         enddate = mdy(enddate),
+         createddate = mdy(createddate),
+         timestamp = hms(timestamp))
+
+glimpse(approval_polllist)
+skim(approval_polllist)
+```
+
+## Create a plot
+
+What I would like you to do is to calculate the average net approval rate (approve- disapprove) for each week since he got into office. I want you plot the net approval, along with its 95% confidence interval. There are various dates given for each poll, please use `enddate`, i.e., the date the poll ended.
+
+Also, please add an orange line at zero. Your plot should look like this:
+```{r}
+# Calculate the weekly net approval rate, along with sample size and standard deviation
+approval_byweek <- approval_polllist %>%
+  mutate(net_approval = approve - disapprove,
+         week = week(enddate),
+         year = year(enddate)) %>% 
+  group_by(week) %>% 
+  summarise(net_approval_mean = mean(net_approval),
+            n = n(),
+            sd = sd(net_approval))
+
+# Create the line plot with 95% confidence interval surrounding it
+approval_byweek %>%  
+  ggplot(aes(x = week, y = net_approval_mean)) +
+  geom_ribbon(aes(ymin = net_approval_mean - qt(0.975,df = n-1)*sd/sqrt(n),
+              ymax = net_approval_mean + qt(0.975, df = n-1)*sd/sqrt(n)),
+              fill = 'grey90',color = 'orangered') +
+  geom_point(color = 'orange') +
+  geom_line(color = 'orange') +
+  geom_smooth(se = F) +
+  geom_line(aes(x=week,y=0),color = 'orange', size = 2) +
+  labs(title = 'Estimating Weekly Net Approval Margin for Joe Biden',
+       x = 'Week of Year 2021',
+       y = 'Average Net Approval Margin(%)') +
+  theme_bw()
+  NULL
+```
+
+
+```{r trump_margins, echo=FALSE, out.width="100%"}
+knitr::include_graphics(here::here("images", "biden_approval_margin.png"), error = FALSE)
+```
+
+## Compare Confidence Intervals
+
+Compare the confidence intervals for `week 3` and `week 25`. Can you explain what's going on? One paragraph would be enough.
+
+Week 3 has an extremely large confidence interval whereas week 25 a very small one. This occurred likely because of the difference in sample sizes in the two weeks. On his first week, Biden received very few polls so there 95% confidence interval for the true approval rate is very large; on the other hand, he may have received a lot more polls on week 25 so the 95% confidence interval computed is much narrower.
+

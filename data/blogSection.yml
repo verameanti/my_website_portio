@@ -1,9 +1,8 @@
 ---
 enable: true
-topTitle: Blog
+topTitle: Projects
 title: >
-  ## Recent Article
+  ## My recent Projects
 
-  Enjoy team diversity and increase their networks among others people in various fields by provided.
-
+  A collection of projects done with R 
 buttonTarget: blog

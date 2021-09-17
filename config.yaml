@@ -8,43 +8,43 @@ menu:
     - name: Home
       url: '#home'
       weight: 1
-    - name: About
-      url: '#about'
-      weight: 2
-    - name: Service
-      url: '#service'
-      weight: 3
-    - name: Work
-      url: '#portfolio'
-      weight: 4
-    - name: Resume
-      url: '#resume'
-      weight: 5
-    - name: Blog
+    # - name: About
+    #   url: '#about'
+    #   weight: 2
+    # - name: Service
+    #   url: '#service'
+    #   weight: 3
+    # - name: Work
+    #   url: '#portfolio'
+    #   weight: 4
+    # - name: Resume
+    #   url: '#resume'
+    #   weight: 5
+    - name: Projects
       url: '#blog'
       weight: 6
-    - name: Contact
-      url: '#contact'
-      weight: 7
-  sitemap:
-    - name: About me
-      url: about
-      weight: 1
-    - name: Frequently Ask Question
-      url: '#'
-      weight: 2
-    - name: Privacy & Policy
-      url: '#'
-      weight: 3
-    - name: Latest Article
-      url: '#'
-      weight: 4
+    # - name: Contact
+    #   url: '#contact'
+    #   weight: 7
+  # sitemap:
+  #   - name: About me
+  #     url: about
+  #     weight: 1
+  #   - name: Frequently Ask Question
+  #     url: '#'
+  #     weight: 2
+  #   - name: Privacy & Policy
+  #     url: '#'
+  #     weight: 3
+  #   - name: Latest Article
+  #     url: '#'
+  #     weight: 4
 params:
   address:
-    address: 23 Khan Niketon, Grand Street, NYK.
-    email: hello@example.com
-    openingHours: Open from 10am to 6pm (close at 5pm Sundays)
-    phone: +(448) 833 5272 332
+    address: Regents Park, NW1 4SA London
+    email: vmeanti.mam2022@london.edu
+    # openingHours: Open from 10am to 6pm (close at 5pm Sundays)
+    phone: +44 (0)7428 749957
   blogPageURL: blog
   contactLink: contact
   copyright: All right reserved copyright © Portio 2020
@@ -58,15 +58,15 @@ params:
     longitude: '90.3746808'
     pinImage: images/pin.png
   social:
-    - icon: fa-facebook-official
-      url: https://www.facebook.com/
-      weight: 1
+    # - icon: fa-facebook-official
+    #   url: https://www.facebook.com/
+    #   weight: 1
     - icon: fa-linkedin-square
-      url: https://www.linkedin.com/
+      url: https://www.linkedin.com/in/verameanti/
       weight: 2
-    - icon: fa-pinterest-square
-      url: https://www.pinterest.com/
-      weight: 3
-    - icon: fa-twitter-square
-      url: https://twitter.com/
+    # - icon: fa-pinterest-square
+    #   url: https://www.pinterest.com/
+    #   weight: 3
+    - icon: fa-github-square
+      url: https://github.com/verameanti
       weight: 4
