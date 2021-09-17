@@ -1,13 +1,12 @@
 ---
 enable: true
-topTitle: Hello, I am Natasha
+topTitle: Hello, I am Vera Meanti 
 content: >
-  # I am here for your personal business
+  # Welcome to my website
 
-  Enjoy team diversity and increase their networks among others people
-  in various fields by
+  Let's learn how to code together! 
 buttonName: Contact me
 buttonURL: contact
-image: images/hero/2960351.jpg
-videoThumb: images/hero/popup-thumb.png
-videoURL: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+image: images/hero/cvfoto.jpg
+videoThumb: images/hero/popup_video.png
+videoURL: https://www.youtube.com/watch?v=5Zg-C8AAIGg
