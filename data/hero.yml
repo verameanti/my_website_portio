@@ -1,10 +1,10 @@
 ---
 enable: true
-topTitle: Hello, I am Vera Meanti 
+topTitle: Hello, I'm Vera Meanti 
 content: >
-  # Welcome to my website
+  # Welcome to my personal website
 
-  Let's learn how to code together! 
+  You can find my latest projects below!
 buttonName: Contact me
 buttonURL: contact
 image: images/hero/cvfoto.jpg
