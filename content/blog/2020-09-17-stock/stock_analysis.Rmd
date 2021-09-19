@@ -50,7 +50,7 @@ library(rvest) # to scrape wikipedia page
 
 > You may find useful the material on [finance data sources](https://mam2022.netlify.app/reference/finance_data/). 
 
-We will use the `tidyquant` package to download historical data of stock prices, calculate returns, and examine the distribution of returns. 
+#### We used  the `tidyquant` package to download historical data of stock prices, calculate returns, and examine the distribution of returns. 
 
 We must first identify which stocks we want to download data for, and for this we must know their ticker symbol; Apple is known as AAPL, Microsoft as MSFT, McDonald's as MCD, etc. The file `nyse.csv` contains 508 stocks listed on the NYSE, their ticker `symbol`, `name`, the IPO  (Initial Public Offering) year, and the sector and industry the company is in.
 

@@ -1,7 +1,7 @@
 ---
 title: "Returns on financial stock analysis"
 author: "Vera Meanti"
-date: "2021-09-17"
+date: "2021-09-19"
 featureImage: images/allpost/stock.jpg
 postImage: images/single-blog/stock.jpg
 output:
@@ -22,7 +22,8 @@ output:
 <blockquote>
 <p>You may find useful the material on <a href="https://mam2022.netlify.app/reference/finance_data/">finance data sources</a>.</p>
 </blockquote>
-<p>We will use the <code>tidyquant</code> package to download historical data of stock prices, calculate returns, and examine the distribution of returns.</p>
+<div id="we-used-the-tidyquant-package-to-download-historical-data-of-stock-prices-calculate-returns-and-examine-the-distribution-of-returns." class="section level4">
+<h4>We used the <code>tidyquant</code> package to download historical data of stock prices, calculate returns, and examine the distribution of returns.</h4>
 <p>We must first identify which stocks we want to download data for, and for this we must know their ticker symbol; Apple is known as AAPL, Microsoft as MSFT, McDonald’s as MCD, etc. The file <code>nyse.csv</code> contains 508 stocks listed on the NYSE, their ticker <code>symbol</code>, <code>name</code>, the IPO (Initial Public Offering) year, and the sector and industry the company is in.</p>
 <pre class="r"><code># Importing and viewing the dataset
 nyse &lt;- read_csv(here::here(&quot;data-csv&quot;,&quot;nyse.csv&quot;))
@@ -265,4 +266,5 @@ ggplot(myStocks_returns_monthly_summary,aes(x=SD_return, y=mean_return, label=sy
 <p><img src="/blog/2020-09-17-stock/stock_analysis_files/figure-html/risk_return_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
 <p>What can you infer from this plot? Are there any stocks which, while being riskier, do not have a higher expected return?</p>
 <p>In general, stocks with higher returns are accompanied with higher risks. ANF underperforms as it has a much higher risk (SD_return) than all the other stocks, yet has a lower average return than all the other stocks except XOM. By contrast, DPZ is a very attractive stock because it generates second highest return while carrying less volatility (risk). Although TSLA has the highest return, it also carries the highest risk and may only be suitable for those with strong risk-bearing capability.</p>
+</div>
 </div>
