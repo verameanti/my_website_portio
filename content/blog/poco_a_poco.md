@@ -21,15 +21,15 @@ Then created our **Figma prototype**
 
 *Landing Page*
 
-![Figma Prot1](/images/single-blog/figma11.png)
+![Figma Prot1](/images/single-blog/figma1.png)
 
 *Looking for teachers*
 
-![Figma Prot2](/images/single-blog/figma22.png)
+![Figma Prot2](/images/single-blog/figma2.png)
 
 *Booking a class*
 
-![Figma Prot3](/images/single-blog/figma333.png)
+![Figma Prot3](/images/single-blog/figma3.png)
 
 We coded using Ruby on Rails until we got the **final product**! 
 
