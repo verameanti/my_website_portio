@@ -70,3 +70,8 @@ params:
     - icon: fa-github-square
       url: https://github.com/verameanti
       weight: 4
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
