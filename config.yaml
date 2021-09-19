@@ -43,7 +43,7 @@ params:
   address:
     address: Regents Park, NW1 4SA London
     email: vmeanti.mam2022@london.edu
-    # openingHours: Open from 10am to 6pm (close at 5pm Sundays)
+    openingHours: Working from 9am to 6pm
     phone: +44 (0)7428 749957
   blogPageURL: blog
   contactLink: contact

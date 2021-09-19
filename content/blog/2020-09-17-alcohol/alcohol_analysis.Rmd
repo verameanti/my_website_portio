@@ -50,6 +50,8 @@ library(rvest) # to scrape wikipedia page
 
 # Where Do People Drink The Most Beer, Wine And Spirits?
 
+#### For this analysis, we looked at the alcohol consumption around the world 
+
 ```{r, load_alcohol_data}
 library(fivethirtyeight)
 data(drinks)
@@ -75,7 +77,11 @@ drinks %>%
   slice_max(order_by = beer_servings, n=25) %>% 
   ggplot(aes(y=reorder(country,beer_servings),x=beer_servings)) +
   geom_col() +
-  labs(title = 'Top 25 Beer Consuming Countries', y = 'country') +
+  labs(title = 'Top 25 Beer Consuming Countries',
+       y = 'Country',
+       x= "Beer Servings"
+       ) +
+  theme_bw()
   NULL
 
 ```
@@ -88,7 +94,10 @@ drinks %>%
   slice_max(order_by = wine_servings, n=25) %>% 
   ggplot(aes(y=reorder(country,wine_servings),x=wine_servings)) +
   geom_col() +
-  labs(title = 'Top 25 Wine Consuming Countries', y = 'country') +
+  labs(title = 'Top 25 Wine Consuming Countries', 
+       y = 'Country', 
+       x="Wine Servings") +
+  theme_bw()+
   NULL
 
 ```
@@ -100,7 +109,10 @@ drinks %>%
   slice_max(order_by = spirit_servings, n=25) %>%
   ggplot(aes(y=reorder(country,spirit_servings),x=spirit_servings)) +
   geom_col() +
-  labs(title = 'Top 25 Spirit Consuming Countries', y = 'country') +
+  labs(title = 'Top 25 Spirit Consuming Countries', 
+       y = 'Country',
+       x= "Spirit servings") +
+  theme_bw()+
   NULL
 
 ```

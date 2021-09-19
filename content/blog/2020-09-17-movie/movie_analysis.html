@@ -1,7 +1,7 @@
 ---
 title: "IMDB Dataset - Movies analysis"
 author: "Vera Meanti"
-date: "2021-09-17"
+date: "2021-09-19"
 featureImage: images/allpost/cinema.jpg
 postImage: images/single-blog/cinema.jpg
 output:
@@ -19,7 +19,8 @@ output:
 
 <div id="analysis-of-movies--imdb-dataset" class="section level1">
 <h1>Analysis of movies- IMDB dataset</h1>
-<p>We will look at a subset sample of movies, taken from the <a href="https://www.kaggle.com/carolzhangdc/imdb-5000-movie-dataset">Kaggle IMDB 5000 movie dataset</a></p>
+<div id="for-this-analysis-we-will-look-at-a-subset-sample-of-movies-taken-from-the-kaggle-imdb-5000-movie-dataset" class="section level4">
+<h4>For this analysis we will look at a subset sample of movies, taken from the <a href="https://www.kaggle.com/carolzhangdc/imdb-5000-movie-dataset">Kaggle IMDB 5000 movie dataset</a></h4>
 <pre class="r"><code>movies &lt;- read_csv(here::here(&quot;data-csv&quot;, &quot;movies.csv&quot;))
 glimpse(movies)</code></pre>
 <pre><code>## Rows: 2,961
@@ -44,8 +45,9 @@ glimpse(movies)</code></pre>
 <li><code>reviews</code>: the number of reviews for that movie</li>
 <li><code>rating</code>: IMDB average rating</li>
 </ul>
-<div id="use-your-data-import-inspection-and-cleaning-skills-to-answer-the-following" class="section level2">
-<h2>Use your data import, inspection, and cleaning skills to answer the following:</h2>
+</div>
+<div id="we-imported-inspected-and-cleaned-the-data-to-answer-the-following" class="section level4">
+<h4>We imported, inspected, and cleaned the data to answer the following:</h4>
 <ul>
 <li>Are there any missing values (NAs)? Are all entries distinct or are there duplicate entries?</li>
 </ul>
@@ -395,21 +397,33 @@ movies %&gt;%
 <pre class="r"><code># Making the overall histogram
 ggplot(movies,aes(x=rating)) +
   geom_histogram() +
-  labs(title = &#39;Overall Ratings Distribution&#39;)</code></pre>
-<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
+  labs(title = &#39;Overall Ratings Distribution&#39;, 
+       x= &quot;Rating&quot;, 
+       y=&quot;Number of ratings&quot;) + 
+  theme_wsj()+ 
+  scale_colour_wsj(&quot;colors6&quot;)</code></pre>
+<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/rating_by_genres-1.png" width="648" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Making histograms for each genre (free scale)
 ggplot(movies,aes(x=rating)) +
   geom_histogram() +
   facet_wrap(~genre,scales = &#39;free&#39;) +
-  labs(title = &#39;Ratings Distribution by Genre (free scale)&#39;)</code></pre>
-<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/unnamed-chunk-5-2.png" width="648" style="display: block; margin: auto;" /></p>
+  labs(title = &#39;Ratings Distribution by Genre (free scale)&#39;,
+       x= &quot;Rating&quot;, 
+       y=&quot;Number of ratings&quot;) +
+  theme_wsj()+ 
+  scale_colour_wsj(&quot;colors6&quot;)</code></pre>
+<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/rating_by_genres-2.png" width="648" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Making histograms for each genre (uniform scale)
 ggplot(movies,aes(x=rating)) +
   geom_histogram() +
   facet_wrap(~genre) +
-  labs(title = &#39;Ratings Distribution by Genre (uniform scale)&#39;) +
-  NULL</code></pre>
-<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/unnamed-chunk-5-3.png" width="648" style="display: block; margin: auto;" /></p>
+  labs(title = &#39;Ratings Distribution by Genre (uniform scale)&#39;,
+       x= &quot;Rating&quot;, 
+       y=&quot;Number of ratings&quot;) +
+  theme_tufte()</code></pre>
+<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/rating_by_genres-3.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  NULL</code></pre>
+<pre><code>## NULL</code></pre>
 </div>
 <div id="use-ggplot-to-answer-the-following" class="section level2">
 <h2>Use <code>ggplot</code> to answer the following</h2>
@@ -420,10 +434,14 @@ ggplot(movies,aes(x=rating)) +
 ggplot(movies,aes(x = cast_facebook_likes, y = gross)) +
   geom_point() +
   geom_smooth() +
-  labs(title = &#39;Cast_facebook_likes vs. Gross&#39;) +
-  NULL</code></pre>
-<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/gross_on_fblikes-1.png" width="648" style="display: block; margin: auto;" />
-Cast_facebook_likes is used as the independent variable and placed on x-axis, whereas gross is to be predicted and placed on y-axis as dependent variables. We can see that the line of best fit suggests that there is a positive correlation between the two variables when the facebook likes are low. However, this relationship is very <strong>insignificant</strong> and it is inverted after facebook likes exceeds around 300,000, potentially due to presence of outliers with high facebook likes but low gross. Overall facebook likes is not a great predictor for gross.</p>
+  labs(title = &#39;Cast Facebook Likes vs. Average Gross Earnings&#39;, 
+       x= &quot;Cast Facebook Likes&quot;, 
+       y= &quot;Average Gross Earnings&quot;) +
+  theme_tufte()</code></pre>
+<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/gross_on_fblikes-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  NULL</code></pre>
+<pre><code>## NULL</code></pre>
+<p>Cast_facebook_likes is used as the independent variable and placed on x-axis, whereas gross is to be predicted and placed on y-axis as dependent variables. We can see that the line of best fit suggests that there is a positive correlation between the two variables when the facebook likes are low. However, this relationship is very <strong>insignificant</strong> and it is inverted after facebook likes exceeds around 300,000, potentially due to presence of outliers with high facebook likes but low gross. Overall facebook likes is not a great predictor for gross.</p>
 <ul>
 <li>Examine the relationship between <code>gross</code> and <code>budget</code>. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.</li>
 </ul>
@@ -431,10 +449,14 @@ Cast_facebook_likes is used as the independent variable and placed on x-axis, wh
 ggplot(movies,aes(x = budget, y = gross)) +
   geom_point() +
   geom_smooth() +
-  labs(title = &#39;Budget vs. Gross&#39;) +
-  NULL</code></pre>
-<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/gross_on_budget-1.png" width="648" style="display: block; margin: auto;" />
-We observe a <strong>relatively strong</strong> positive correlation between the budget and gross of movies. Budget is not the perfect predictor but can predict the gross to a degree.</p>
+  labs(title = &#39;Budget vs. Average Gross Earnings&#39;,
+       x= &quot;Budget&quot;,
+       y= &quot; Average Gross Earnings&quot;) +
+   theme_tufte()</code></pre>
+<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/gross_on_budget-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  NULL</code></pre>
+<pre><code>## NULL</code></pre>
+<p>We observe a <strong>relatively strong</strong> positive correlation between the budget and gross of movies. Budget is not the perfect predictor but can predict the gross to a degree.</p>
 <ul>
 <li>Examine the relationship between <code>gross</code> and <code>rating</code>. Produce a scatterplot, faceted by <code>genre</code> and discuss whether IMDB ratings are likely to be a good predictor of how much money a movie will make at the box office. Is there anything strange in this dataset?</li>
 </ul>
@@ -443,9 +465,13 @@ ggplot(movies,aes(x = rating, y = gross)) +
   geom_point() +
   geom_smooth() +
   facet_wrap(~genre) +
-  labs(title = &#39;Ratings vs. Gross by Genre&#39;) +
-  NULL</code></pre>
-<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/gross_on_rating-1.png" width="648" style="display: block; margin: auto;" />
-We observe a decent level of positive correlation between rating and gross for most genres with sufficient data points. Thus, rating is a decent predictor to predict the gross of movies overall. However, there are quite a number of genres with insufficient data points and there is one strange thing: the documentary genre shows a negative relationship between rating and gross.</p>
+  labs(title = &#39;Ratings vs. Gross by Genre&#39;,
+       x=&quot;Ratings&quot;,
+       y=&quot;Average Gross Earnings&quot;) +
+  theme_tufte()</code></pre>
+<p><img src="/blog/2020-09-17-movie/movie_analysis_files/figure-html/gross_on_rating-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  NULL</code></pre>
+<pre><code>## NULL</code></pre>
+<p>We observe a decent level of positive correlation between rating and gross for most genres with sufficient data points. Thus, rating is a decent predictor to predict the gross of movies overall. However, there are quite a number of genres with insufficient data points and there is one strange thing: the documentary genre shows a negative relationship between rating and gross.</p>
 </div>
 </div>
