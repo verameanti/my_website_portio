@@ -8,33 +8,18 @@ menu:
     - name: Home
       url: '#home'
       weight: 1
-    # - name: About
-    #   url: '#about'
-    #   weight: 2
-    # - name: Service
-    #   url: '#service'
-    #   weight: 3
-    # - name: Work
-    #   url: '#portfolio'
-    #   weight: 4
-    # - name: Resume
-    #   url: '#resume'
-    #   weight: 5
     - name: Projects
-      url: blog
-      weight: 6
-     # - name: Contact
-     #   url: '#contact'
-     #   weight: 7
-   sitemap:
-     - name: Home
+      url: 'blog'
+      weight: 2
+  sitemap:
+    - name: Home
       url: '#home'
       weight: 1
-     - name: Contact
-       url: '#contact'
-       weight: 2
     - name: Projects
-      url: blog
+      url: 'blog'
+      weight: 2
+    - name: Contact
+      url: 'contact'
       weight: 3
 params:
   address:
@@ -45,28 +30,16 @@ params:
   blogPageURL: blog
   contactLink: contact
   copyright: All right reserved copyright © VeraMeanti 2020
-  footerLogo: images/contact/vm.png
+  footerLogo: images/contact/vm4.png
   formspreeURL: YOUR FORMSPREE URL
-  googleAnalytics: YOUR GOOGLE ANALYTICS CODE
-  logo: images/site-navigation/vm.png
-  # map:
-  #   APIkey: YOUR GOOGLE MAP API
-  #   latitude: '23.7783741'
-  #   longitude: '90.3746808'
-  #   pinImage: images/pin.png
+  logo: images/site-navigation/vm4.png
   social:
-    # - icon: fa-facebook-official
-    #   url: https://www.facebook.com/
-    #   weight: 1
     - icon: fa-linkedin-square
       url: https://www.linkedin.com/in/verameanti/
-      weight: 2
-    # - icon: fa-pinterest-square
-    #   url: https://www.pinterest.com/
-    #   weight: 3
+      weight: 1
     - icon: fa-github-square
       url: https://github.com/verameanti
-      weight: 4
+      weight: 2
 
 markup:
   goldmark:
